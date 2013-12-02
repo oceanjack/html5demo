@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Hello</title>
+		<script type = "text/javascript">
+			var s = 1;
+			var l = 7;
+			function  change_shape() {
+				var c = document.getElementById("myCanvas");
+				var cxt = c.getContext("2d");
+				cxt.fillStyle = "#FF0000";
+				cxt.beginPath();
+				var t = s*0.02;
+				var ppr = 16*Math.sin(t)*Math.sin(t)*Math.sin(t);
+				var ppl = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+				cxt.arc(ppr*l + 300, -ppl*l + 200, 1, 0*s, Math.PI*2, true);
+				cxt.closePath();
+				cxt.fill();
+				++s;
+				if(s <= 500)
+					t = setTimeout("change_shape()", 1);
+				else {
+					--l;
+					s = 1;
+					if(l >= 1)
+						t = setTimeout("change_shape()", 0);
+				}
+			}
+		</script>
+	</head>
+	<body onLoad = "change_shape()">
+		<canvas id = "myCanvas" width = "1000" height = "600"></canvas>
+	</body>
+</html>

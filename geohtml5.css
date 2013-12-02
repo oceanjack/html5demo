@@ -1,0 +1,223 @@
+body
+{
+	background-color:#CCCCCC;
+	font-family:Geneva,Arial,Helvetica,sans-serif;
+	margin:0px auto;
+	max-width:900px;
+	border:solid;
+	border-color:#FFFFFF;
+}
+
+header 
+{
+	background-color:#F47D31;
+	display:block;
+	color:#FFFFFF;
+	text-align:center;
+}
+
+header h2
+{
+	margin:0px;
+}
+
+h1
+{
+	font-size:72px;
+	margin:0px;
+}
+
+h2
+{
+	font-size:  24px;
+	margin: 0px;
+	text-align:center;
+	color:#F47D31;
+}
+
+h3
+{
+	font-size:18px;
+	margin:0px;
+	text-align:center;
+	color:#F47D31;
+}
+
+h4
+{
+	color:#F47D31;
+	background-color:#fff;
+	-webkit-box-shadow:2px 2px 20px #888;
+	-webkit-transform: rotate(-45deg);
+	-moz-box-shadow:2px 2px 20px #888;
+	-moz-transform: rotate(-45deg);
+	position:absolute;
+	padding:0px 150px;
+	top:50px;
+	left:-120px;
+	text-align:center;
+	z-index:10000;
+}
+
+nav
+{
+	/*display 属性规定元素应该生成的框的类型。
+	值		描述
+	none	此元素不会被显示。
+	block	此元素将显示为块级元素，此元素前后会带有换行符。
+	inline	默认。此元素会被显示为内联元素，元素前后没有换行符。
+	inline-block	行内块元素。（CSS2.1 新增的值）
+	list-item	此元素会作为列表显示。
+	run-in	此元素会根据上下文作为块级元素或内联元素显示。
+	compact	CSS 中有值 compact，不过由于缺乏广泛支持，已经从 CSS2.1 中删除。
+	marker	CSS 中有值 marker，不过由于缺乏广泛支持，已经从 CSS2.1 中删除。
+	table	此元素会作为块级表格来显示（类似 <table>），表格前后带有换行符。
+	inline-table	此元素会作为内联表格来显示（类似 <table>），表格前后没有换行符。
+	table-row-group	此元素会作为一个或多个行的分组来显示（类似 <tbody>）。
+	table-header-group	此元素会作为一个或多个行的分组来显示（类似 <thead>）。
+	table-footer-group	此元素会作为一个或多个行的分组来显示（类似 <tfoot>）。
+	table-row	此元素会作为一个表格行显示（类似 <tr>）。
+	table-column-group	此元素会作为一个或多个列的分组来显示（类似 <colgroup>）。
+	table-column	此元素会作为一个单元格列显示（类似 <col>）
+	table-cell	此元素会作为一个表格单元格显示（类似 <td> 和 <th>）
+	table-caption	此元素会作为一个表格标题显示（类似 <caption>）
+	inherit	规定应该从父元素继承 display 属性的值。
+	 */
+	display:block;
+	width:25%;
+	float:left;
+}
+
+nav a:link, nav a:visited
+{
+	display:block;
+	border-bottom:3px solid #fff;
+	padding:10px;
+	/*text-decoration 属性规定添加到文本的修饰。
+	值		描述
+	none	默认。定义标准的文本。
+	underline	定义文本下的一条线。
+	overline	定义文本上的一条线。
+	line-through	定义穿过文本下的一条线。
+	blink	定义闪烁的文本。
+	inherit	规定应该从父元素继承 text-decoration 属性的值。
+	*/
+	text-decoration:none;
+	font-weight:bold;
+	margin:5px;
+}
+
+nav a:hover
+{
+	color:white;
+	background-color:#F47D31;
+}
+
+nav h3
+{
+	margin:15px;
+	color:white;
+}
+
+#container
+{
+	background-color:#888;
+}
+
+section
+{
+	display:block;
+	width:50%;
+	height:100%;
+	float:left;
+}
+
+article
+{
+	background-color:#eee;
+	display:block;
+	margin:10px;
+	padding:10px;
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
+	-webkit-box-shadow:2px 2px 20px #888;
+	-webkit-transform:rotate(0deg);
+	-moz-box-shadow:2px 2px 20px #888;
+	-moz-transform:rotate(0deg);
+}
+
+article header
+{
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
+	padding:5px;
+}
+
+article footer
+{
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
+	padding:5px;
+}
+
+article h1
+{
+	font-size:18px;
+}
+
+aside
+{
+	display:block;
+	width:25%;
+	float:left;
+}
+
+aside h3
+{
+	margin:15px;
+	color:white;
+}
+
+aside p
+{
+	margin:15px;
+	color:white;
+	font-weight:bold;
+	font-style:italic;
+}
+
+footer
+{
+	/*clear 属性规定元素的哪一侧不允许其他浮动元素
+	值		描述
+	left	在左侧不允许浮动元素。
+	right	在右侧不允许浮动元素。
+	both	在左右两侧均不允许浮动元素。
+	none	默认值。允许浮动元素出现在两侧。
+	inherit	规定应该从父元素继承 clear 属性的值。
+	 */
+	clear:both;
+	display:block;
+	background-color:#F47D31;
+	color:#FFFFFF;
+	text-align:center;
+	padding:15px;
+}
+
+footer h2
+{
+	font-size: 14px;
+	color:white;
+}
+
+a
+{
+	color:#F47D31;
+}
+a:hover
+{
+	text-decoration:underline;
+}

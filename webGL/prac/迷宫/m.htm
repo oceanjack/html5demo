@@ -1,0 +1,106 @@
+﻿<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>迷宫</title>
+        <script type="text/javascript" src="Oak3D_v_0_5.js"></script>
+        <script id="shader-fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            varying vec2 vTextureCoord;
+            varying vec3 vLightWeighting;
+            varying vec3 vTransformedNormal;
+            varying vec4 vPosition;
+
+            uniform vec3 uAmbientColor;
+            uniform vec3 uPointLightingLocation;
+            uniform vec3 uPointLightingColor;
+
+            uniform sampler2D uSampler;
+
+            void main(void) {
+                vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
+                float directionalLightWeighting = max(dot(normalize(vTransformedNormal), lightDirection), 0.0);
+                vec3 lightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;
+        
+                vec4 textureColor= texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+                gl_FragColor = vec4(textureColor.rgb * lightWeighting, textureColor.a);
+            }
+        </script>
+        <script id="shader-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+            attribute vec2 aTextureCoord;
+            attribute vec3 aVertexNormal;
+
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+            uniform mat4 uNMatrix;
+    
+            uniform vec3 uAmbientColor;
+            uniform bool uUseLighting;
+
+            varying vec2 vTextureCoord;
+            varying vec3 vLightWeighting;
+            varying vec3 vTransformedNormal;
+            varying vec4 vPosition;
+
+            void main(void) {
+                vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * vPosition;
+                vTextureCoord = aTextureCoord;
+                vLightWeighting = uAmbientColor;
+                vTransformedNormal = (uNMatrix * vec4(aVertexNormal, 1.0)).xyz;
+            }
+        </script>
+        <script type="text/javascript" src="platform_ai_js_exec.js"></script>
+        <script type="text/javascript" src="m.js"></script>
+		 <!---->
+        <script type="text/javascript" src="/OnlineAI/_resources/platform_ai_js_cfg.js"></script>
+        <script type="text/javascript">
+            var myName = null;
+            var mySrc = null;
+            var t1, t2;
+            function getMyNameS() {
+                if (myName == null) {
+                    platform_ai_js_cfg.query('currentUser', '');
+                    t1 = setTimeout("getMyNameS()", 3000);
+                }
+            }
+            function getMySrcS() {
+                if (mySrc == null) {
+                    platform_ai_js_cfg.query('jsUrlsOf', myName);
+                    t2 = setTimeout("getMySrcS()", 3000);
+                }
+            }
+            platform_ai_js_cfg.onreply = function (data) {
+                if (myName == null) {
+                    clearTimeout(t1);
+                    myName = data;
+                    getMySrcS();
+                }
+                else if (mySrc == null) {
+                    clearTimeout(t2);
+                    mySrc = data.split(';')[0];
+                }
+            }
+            getMyNameS();
+        </script>
+        <!---->
+        <style type="text/css">
+            body { cursor: none; }
+            #loadingtexts {
+                position: absolute;
+                top: 150px;
+                left: 240px;
+                color: white;
+                font-size: 24px;
+            }
+            #cs-canvas { border: none; }
+            #loadingtext { font-family: MV Boli; }
+        </style>
+    </head>
+    <body onload="webGLStart();">
+        <canvas id="cs-canvas" width="1200" height="700"></canvas>
+        <div id="loadingtexts"><pre id="loadingtext">Loading world...</pre></div>
+    </body>
+</html>

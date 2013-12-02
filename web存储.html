@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+	<body>
+		<script type = "text/javascript">
+
+			<!--localStorage-->
+			<!--记个名字-->
+			localStorage.name = "fjy";
+			document.write("Name: " + localStorage.name);
+			<!--统计量-->
+			if(localStorage.pagecount)
+				localStorage.pagecount = Number(localStorage.pagecount) + 1;
+			else
+				localStorage.pagecount = 1;
+			document.write("<br/>");
+			document.write("Total: " + localStorage.pagecount);
+
+			<!--sessionStorage-->
+			if(sessionStorage.pagecount)
+				sessionStorage.pagecount = Number(sessionStorage.pagecount) + 1;
+			else
+				sessionStorage.pagecount = 1;
+			document.write("<br/>");
+			document.write("session_total: " +sessionStorage.pagecount);
+		</script>
+	</body>
+</html>

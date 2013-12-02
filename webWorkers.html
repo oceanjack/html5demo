@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--支持网站caniuse.com中搜Web Workers-->
+		<title>Web Workers</title>
+	</head>
+	<body>
+		<p id = "status">No support.</p>
+		<button id="startBlurButton" disabled>Blur</button>
+		<button id="stopButton" disabled>Stop Workers</button>
+		<button onclick="document.location = document.location;">Reload</button>
+		<!--下拉框-->
+		<label for="workerCount">Number of Workers</label>
+		<select id="workerCount">
+			<option>1</option>
+			<option selected>2</option>
+			<option>4</option>
+			<option>8</option>
+			<option>16</option>
+		</select>
+
+        <div id="logOutput"></div>
+		<div id="imageContainer"></div>
+
+		<script type="text/javascript">
+
+var imageURL = "forWorkers.png";
+var image;
+var ctx;
+var workers = [];
+//跟新动态
+function log(s)
+{
+	var logOutput = document.getElementById("logOutput");
+	logOutput.innerHTML = s;
+}
+//设置按钮状态
+function setRunningState(p)
+{
+	document.getElementById("startBlurButton").disabled = p;
+	document.getElementById("stopButton").disabled = !p;
+}
+//初始化Worker
+function initWorker(src)
+{
+	//共享worker方式
+	var worker = new Worker(src);
+//*******添加监听，来捕获来自worker的消息，然后交给messageHandler处理
+	worker.addEventListener("message", messageHandler, true);
+	worker.addEventListener("error", errorHandler, true);
+	return worker;
+}
+//开始模糊工作
+function startBlur()
+{
+	var workerCount = parseInt(document.getElementById("workerCount").value);
+	var width = image.width / workerCount;
+
+	for(var i = 0; i < workerCount; ++i)
+	{
+		var worker = initWorker("blurWorker.js");
+		worker.index = i;
+		worker.width = width;
+		workers[i] = worker;
+
+		sendBlurTask(worker, i, width);
+	}
+	setRunningState(true);
+}
+//发送任务
+function sendBlurTask(worker, i, chunkWidth)
+{
+	var chunkHeight = image.height;
+	var chunkStartX = i * chunkWidth;
+	var chunkStartY = 0;
+	var data = ctx.getImageData(chunkStartX, chunkStartY, chunkWidth, chunkHeight).data;
+ //*******通过postMessage通信，在worker中添加监听，来捕获该消息
+	worker.postMessage({'type' : 'blur',
+						'imageData' : data,
+						'width' : chunkWidth,
+						'height' : chunkHeight,
+						'startX' : chunkStartX});
+}
+//停止模糊工作
+function stopBlur()
+{
+	for(var i = 0; i < workers.length; ++i)
+	{
+//*******终止worker,并且它们不能被重新启动,除非创建新的
+		workers[i].terminate();
+	}
+	setRunningState(false);
+}
+//信息处理
+function messageHandler(e)
+{
+	//捕获到的消息
+	var messageType = e.data.type;
+	//消息分类处理
+	switch(messageType)
+	{
+		case ("status"):
+			log(e.data.statusText);
+			break;
+		case ("progress"):
+			var imageData = ctx.createImageData(e.data.width, e.data.height);
+
+			for(var i = 0; i < imageData.data.length; ++i)
+			{
+				var val = e.data.imageData[i];
+				if(val == null || val > 255 || val < 0)
+				{
+					log("illegal value: " + val + "at" + i);
+					return;
+				}
+				imageData.data[i] = val;
+			}
+			ctx.putImageData(imageData, e.data.startX, 0);
+//*******上述消息接收完毕再次进行模糊处理
+			sendBlurTask(e.target, e.target.index, e.target.width);
+			break;
+		default:
+			break;
+	}
+}
+//错误信息处理
+function errorHandler(e)
+{
+	log("error: " + e.message);
+}
+//读取图片
+function loadImageData(url)
+{
+	var canvas = document.createElement('canvas');
+	ctx = canvas.getContext("2d");
+	image = new Image();
+	image.src = url;
+
+	document.getElementById("imageContainer").appendChild(canvas);
+
+	image.onload = function()
+	{
+		canvas.width = image.width;
+		canvas.height = image.height;
+		//将图片画在canvas上
+		ctx.drawImage(image, 0, 0);
+		window.imgdata = ctx.getImageData(0, 0, image.width, image.height);
+		n = ctx.createImageData(image.width, image.height);
+		setRunningState(false);
+		log("Image loaded: " + image.width + "x" + image.height + "pixels");
+	};
+}
+//主函数
+function loadDemo()
+{
+	log("Loading image data");
+
+	if(typeof(Worker) != undefined)
+	{
+		document.getElementById("status").innerHTML = "";
+		
+		document.getElementById("stopButton").onclick = stopBlur;
+		document.getElementById("startBlurButton").onclick = startBlur;
+
+		loadImageData(imageURL);
+
+		document.getElementById("startBlurButton").disabled = true;
+		document.getElementById("stopButton").disabled = true;
+	}
+}
+//添加监听
+window.addEventListener("load", loadDemo, true);
+		</script>
+	</body>
+</html>

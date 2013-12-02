@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+	<body>
+		<!--输入类型-->
+		<form action = "http://www.w3school.com.cn/example/html5/demo_form.asp" method = "get">
+			<!--会自动验证 email 域的值-->
+			E-mail: <input type = "email" name = "user_email" />
+			<br/>
+			<input type = "submit" />
+			<br/>
+			<!--url-->
+			Homepage: <input type = "url" name = "user_url" />
+			<br/>
+			<input type = "submit" />
+			<br/>
+			<!--number-->
+			Num: <input type = "number" name = "user_num" value = "1" min = "1" max = "10" step = "3" />
+			<br/>
+			<input type = "submit" />
+			<br/>
+			<!--range-->
+			Range: <input type = "range" name = "user_range" value = "5" min = "1" max = "10" step = "2" />
+			<br/>
+			<input type = "submit" />
+			<br/>
+		</form>
+		<!--表单元素,keygen密钥对生成器-->
+		<form action = "http://www.w3school.com.cn/example/html5/demo_form.asp" method = "get">
+			Username: <input type = "text" name = "usr_name" />
+			Encryption: <keygen name = "security" />
+			<input type="submit" />
+		</form>
+	</body>
+</html>

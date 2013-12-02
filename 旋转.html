@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ðý×ªÊ¾Àý</title>
+		<meta charset="utf-8" />
+		<script type="text/javascript">
+			//init
+			function Ball(x, y, len)
+			{
+				this.x = x;
+				this.y = y;
+				this.len = len;
+				this.rec = 0;
+			}
+			var myball;
+			var first = true;
+			var ctx;
+			var change = true;
+			var step = 0.07;
+			//³õÊ¼»¯
+			function init()
+			{
+				if(first == false)
+					return;
+				first = false;
+				ctx = document.getElementById('canvas').getContext('2d');
+				ctx.strokeStyle = "rgb(255, 0, 0)";
+				ctx.fillStyle = "rgb(0, 0, 0)";
+			}
+			//Âß¼­
+			function run()
+			{
+				myball.rec += Math.PI/120;
+				myball.len += step;
+				if(myball.len >= 200)
+					step = -step;
+				if(myball.len <= 0)
+					step = -step;
+			}
+			//ÏÔÊ¾
+			function show()
+			{
+				if(change == false)
+					ctx.clearRect(0, 0, 800, 600);
+				
+				ctx.save();
+				ctx.translate(myball.x, myball.y);
+				ctx.rotate(myball.rec);
+				ctx.translate(-myball.x, -myball.y);
+				ctx.fillRect(myball.x, myball.y, 1, myball.len);
+				ctx.restore();
+
+				ctx.beginPath();
+				ctx.arc(myball.x, myball.y, myball.len, 0, Math.PI*2, true);
+				ctx.closePath();
+				ctx.stroke();
+			}
+			//main
+			function main()
+			{
+				init();
+				run();
+				show();
+			}
+			//clock
+			function clock()
+			{
+				//init
+				myball = new Ball(400, 300, 0);
+				//run
+				setInterval("main();", 10);
+			}
+			//²Êµ°
+			function stay()
+			{
+				if(change == false)
+					change = true;
+				else
+					change = false;
+			}
+		</script>
+	</head>
+	<body onLoad="clock();" onclick="stay();">
+		<canvas id="canvas" width="800" height="600">No support.</canvas>
+	</body>
+</html>

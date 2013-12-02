@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>geolocation</title>
+		<link rel="stylesheet" href="geohtml5.css" />
+	</head>
+	<body onload="loadDemo()">
+		<header>
+			<h1>Welcome</h1>
+			<h4>Live Race Data!</h4>
+		</header>
+		<div id="container">
+			<section>
+				<article>
+					<header>
+						<h1>Your Location</h1>
+					</header>
+					<p class="info" id="status">No support.</p>
+					<div class="geostatus">
+						<p id="latitude">Latitude: </p>
+						<p id="longitude">Longitude: </p>
+						<p id="accuracy">Accuracy: </p>
+						<p id="timestamp">Timestamp: </p>
+						<p id="currDist">Current distance traveled: </p>
+						<p id="totalDist">Total distance traveled: </p>
+						<p id="mapSize">Map size(): </p><input id="mapV" type="range" value="11" min="1" max="20" step="1" />
+					</div>
+				</article>
+			</section>
+			<section>
+				<article>
+					<header>
+						<h1>Map</h1>
+					</header>
+					<div class="geostatus">
+                        <p>
+                            <img id="map" src="" />
+                        </p>
+					</div>
+				</article>
+			</section>
+		</div>
+		<footer>
+			<h2>Powered by HTML5</h2>
+		</footer>
+
+		<script type="text/javascript">
+var totDist = 0.0;
+var lastLat = 0.0;
+var lastLong = 0.0;
+
+Number.prototype.toRadians = function()
+{
+	return this * Math.PI / 180;
+}
+//计算距离
+function dis(a1, o1, a2, o2)
+{
+	//Haversine公式(计算地球上两点距离)
+	var R = 6371;
+	var dae = (a2 - a1).toRadians();
+	var doe = (o2 - o1).toRadians();
+	a1 = a1.toRadians();
+	a2 = a2.toRadians();
+	var a = Math.sin(dae/2) * Math.sin(dae/2) + Math.cos(a1) * Math.cos(a2) * Math.sin(doe/2) * Math.sin(doe/2);
+	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+	var d = R * c;
+	return d;
+}
+//处理错误
+function updateErrorStatus(mes)
+{
+	document.getElementById("status").style.background = "paleGreen";
+	document.getElementById("status").innerHTML = "<strong>Error</strong>: " + mes;
+}
+function updateStatus(mes)
+{
+	document.getElementById("status").style.background = "papayaWhip";
+	document.getElementById("status").innerHTML = mes;
+}
+//载入
+var watchId;
+function loadDemo()
+{
+	if(navigator.geolocation)
+	{
+	    document.getElementById("status").innerHTML = "";
+	    //添加一些事件
+	    var mapV = document.getElementById("mapV");
+	    mapV.onmouseup = onChange;
+	    mapV.onkeyup = onChange;
+		//重复跟新
+		watchId = navigator.geolocation.watchPosition(updateLocation, handleLocationError, {timeout:10000});
+	}
+}
+var mapVs;
+var lat;
+var lon;
+var acc;
+var tim;
+//处理变化
+function onChange()
+{
+    var mapV = document.getElementById("mapV");
+    if (mapVs != mapV.value) 
+        document.getElementById("map").src = "http://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=" + mapV.value + "&size=400x300&sensor=false";
+    mapVs = mapV.value;
+    document.getElementById("mapSize").innerHTML = "Map size(" + mapVs + "): ";
+}
+//跟新信息
+function updateLocation(position)
+{
+	lat = position.coords.latitude;
+	lon = position.coords.longitude;
+	acc = position.coords.accuracy;
+	tim = position.timestamp;
+
+	document.getElementById("latitude").innerHTML = "Latitude: " + lat;
+	document.getElementById("longitude").innerHTML = "Longitude: " + lon;
+	document.getElementById("accuracy").innerHTML = "Accuracy: " + acc;
+	document.getElementById("timestamp").innerHTML = "Timestamp: " + tim;
+
+	var mapV = document.getElementById("mapV");
+	mapVs = mapV.value;
+	document.getElementById("mapSize").innerHTML = "Map size(" + mapVs + "): ";
+	document.getElementById("map").src = "http://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=" + mapVs + "&size=400x300&sensor=false";	
+
+	if(acc > 30000)
+	{
+		updateStatus("Need more accurate values to calculate distance.");
+		return;
+	}
+
+	if((lastLat != null) && (lastLong != null))
+	{
+		var cd = dis(lat, lon, lastLat, lastLong);
+		document.getElementById("currDist").innerHTML = "Current distance traveled: " + cd.toFixed(2) + "km";
+		totDist += cd;
+		document.getElementById("totalDist").innerHTML = "Total distance traveled: " + totDist.toFixed(2) + "km";
+		updateStatus("");
+	}
+
+	lastLat = lat;
+	lastLong = lon;
+}
+//处理错误信息
+function handleLocationError(error)
+{
+	switch(error.code)
+	{
+		case 0:
+			updateErrorStatus("There was an error while retrieving your location. " + error.message);
+			break;
+		case 1:
+			updateErrorStatus("The user opted not to share his or her location.");
+			break;
+		case 2:
+			updateErrorStatus("The browser was unable to determine your location. " + error.message);
+			break;
+		case 3:
+			updateErrorStatus("The browser timed out before retrieving the location.");
+			break;
+	}
+}
+		</script>
+	</body>
+</html>

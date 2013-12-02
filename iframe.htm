@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <script>
+            function initFrame()
+            {
+                //获得frame
+                var iframe = document.getElementById("mainframe");
+                try
+                {
+                    //根据嵌套页设置IFRAME高度
+                    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+                    //根据嵌套页设置IFRAME宽度
+                    iframe.width = iframe.contentWindow.document.body.scrollWidth;
+                } catch (ex){}
+            }
+        </script>
+    </head>
+    <body>
+        <iframe id="mainframe" scrolling="no" style="border: 0; width: 720px;" src="geolocation.htm" onload="initFrame();"></iframe>
+    </body>
+</html>

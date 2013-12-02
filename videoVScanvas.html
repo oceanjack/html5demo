@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Video</title>
+		<style type="text/css">
+div
+{
+	left:10px;
+	top:10px;
+}
+/*悬浮一个*/
+#showbox
+{
+	position:absolute;
+	width:400px;
+	height:300px;
+	z-index:10000;
+}
+		</style>
+		<script type="text/javascript">
+var videolength = 0;
+var t = 0;
+window.onload = function()
+{
+	if(vs)
+		return;
+	var getVideo = document.getElementById("movies");
+	videolength = Math.floor(getVideo.duration * 1000);
+	t = Math.floor(videolength / 15.9);
+	vs = true;
+	startVideo();
+}
+//动图尺寸
+var showW = 400;
+var showH = 300;
+var showL = 10;
+var showT = 10;
+//小图尺寸
+var fw = 100;
+var fh = 75;
+var fr = 4;
+var fc = 4;
+var fg = fr * fc;
+var alp = 0.0;
+//当前指针
+var now = 0;
+//时钟
+var tid;
+var showtime;
+//
+var vs = false;
+var allend = false;
+//图像
+var rain = new Image();
+//跟新动图
+function updateShow()
+{
+	var getShow = document.getElementById("show");
+	showW -= 1.5;
+	showH -= 1.125;
+	//getShow.width = Math.floor(showW);
+	//getShow.height = Math.floor(showH);
+        
+	
+	var fp = now % fg;
+	var fx = (fp % fc) * fw;
+	var fy = (Math.floor(fp / fr)) * fh;
+
+	alp += 0.005;
+	if(alp >= 1.0)
+	    alp = 1.0;
+	document.getElementById("timeline").getContext("2d").globalAlpha = alp;
+	document.getElementById("timeline").getContext("2d").drawImage(rain, fx, fy, fw, fh);
+
+	var getBox = document.getElementById("showbox");
+
+	//右移边界
+	var lim = 0;
+	//右移速度
+	var mov = 2.0;
+	switch((fp % fc))
+	{
+		case 1:
+			lim = 100;
+			mov = 2.5;
+			break;
+		case 2:
+			lim = 200;
+			mov = 3.0;
+			break;
+		case 3:
+			lim = 300;
+			mov = 3.5;
+			break;
+		default:
+			break;	
+	}
+	//动图右移
+	showL += mov;
+	//getBox.style.left = showL + "px";
+
+	//下移速度
+	var add = 0.0;
+	switch((Math.floor(fp / fr)))
+	{
+		case 1:
+			add = 0.375;
+			break;
+		case 2:
+			add = 0.75;
+			break;
+		case 3:
+			add = 1.125;
+			break;
+		default:
+			break;	
+	}
+	//动图下移
+	showT += add;
+	//getBox.style.top = showT + "px";
+
+	if(showL > 400 + lim + 10)
+	{
+		//动图回归原位
+		getShow.getContext("2d").clearRect(0, 0, getShow.width, getShow.height)
+		showW = 400;
+		showH = 300;	
+		getShow.width = 400;
+		getShow.height = 300;
+		showL = 10;
+		showT = 10;
+		getBox.style.left = "10px";
+		getBox.style.top = "10px";
+
+		var timeline = document.getElementById("timeline");
+		var ctx = timeline.getContext("2d");
+
+		//计算位置
+		fp = now % fg;
+		fx = (fp % fc) * fw;
+		fy = (Math.floor(fp / fr)) * fh;
+		ctx.drawImage(rain, fx, fy, fw, fh);
+		alp = 0.0;
+
+		++now;
+		clearInterval(showtime);
+	}
+}
+//跟新图像
+function updateFrame()
+{
+	var video = document.getElementById("movies");
+	var timeline = document.getElementById("timeline");
+	var ctx = timeline.getContext("2d");
+	var show = document.getElementById("show").getContext("2d");
+
+	rain = video;
+	//video画到canvas上，有木有
+	show.drawImage(video, 0, 0, 400, 300);
+	showtime = setInterval("updateShow()" , 10);
+
+	//var fp = now % fg;
+	//var fx = (fp % fc) * fw;
+	//var fy = (Math.floor(fp / fr)) * fh;
+	//ctx.drawImage(video, fx, fy, fw, fh);
+
+	//++now;
+}
+//开始录像
+function startVideo()
+{
+	//显示时间
+	var timeline = document.getElementById("timeline");
+	var ctx = timeline.getContext("2d");
+	for(var j = 0; j < fc; ++j)
+		for(var i = 0; i < fr; ++i)
+		{
+			var dy = j * 75 + 40;
+			var dx = i * 100 + 40;
+			var realtime = t * (j*fc + i);
+			var rtf = Math.floor(realtime / 60000);
+			var rte = Math.floor((realtime % 60000) / 1000);
+			var rtt = rtf + ":" + rte;
+			ctx.font = "20px impact";
+			ctx.fillStyle = '#996600';
+			ctx.textAlign = 'center';
+			ctx.fillText(rtt, dx, dy, 100);
+		}
+
+	updateFrame();
+	tid = setInterval("updateFrame()", t);
+
+	timeline.onclick = function(evt)
+	{
+		//判断位置
+		var ox = evt.layerX - timeline.offsetLeft;
+		var oy = evt.layerY - timeline.offsetTop;
+
+		var cf = Math.floor(oy / fh) * fr;
+		cf += Math.floor(ox / fw);
+
+		//跳转位置
+		var video = document.getElementById("movies");
+		video.currentTime = cf * t / 1000;
+		video.play();
+
+		now = cf;
+		++now;
+
+		//处理时钟误差
+		if(allend == false)
+		{
+			clearInterval(tid);
+			tid = setInterval("updateFrame()", t);
+		}
+	}
+}
+//停止取图
+function stopTimeline()
+{
+	allend = true;
+	clearInterval(tid);
+}
+		</script>
+	</head>
+	<body style="background-color:#000000;">
+		<div id="showbox" style="top:10px; left:10px; width:400px; height:300px; display:none;">
+			<canvas id="show" width="400" height="300"></canvas>
+		</div>
+		<div>	
+			<video id="movies" autoplay onended="stopTimeline()" autobuffer="true" width="400px" height="300px">
+				<source src="mfv.webm" />
+			</video>
+			<canvas id="timeline" width="400" height="300">Nothing</canvas>
+		</div>	
+	</body>
+<html>

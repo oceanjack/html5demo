@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"    
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="migong" class="cn.edu.njust.webai.bean.XmlProject">
+		<property name="name" value="Mi Gong" />
+		<property name="summary" value="A kind of classical chess game" />
+		<property name="scale" value="1" />
+		<property name="lang" value="Js" />
+		<property name="scene" value="3D" />
+		<property name="menuItems">
+			<map>
+				<entry key="page_description" value="Description" />
+				<entry key="*ai-js-strategy" value="My Strategies" />
+				<entry key="m" value="Let's play AI!" />
+			</map>
+		</property>
+	</bean>
+</beans>

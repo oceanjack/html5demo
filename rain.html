@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>rain</title>
+		<script type="text/javascript">
+var canvas;
+var context;
+var rain = new Image();
+rain.src = "57.png";
+var back = new Image();
+back.src = "Photo874.jpg";
+rain.onload = function()
+{
+	canvas = document.getElementById("canvas");
+	//从单帧请求开始创建动画
+	window.requestAnimFrame(loopAnimation, canvas);
+}
+window.requestAnimFrame = 
+(
+	function()
+	{
+		return  window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				function(/*function*/callback, /*DOMElement*/element)
+				{
+					window.setTimeout(callback, 1000/60);
+				};
+	}
+) ();
+function drawAFrame()
+{
+	context = canvas.getContext('2d');
+
+	context.save();
+	context.drawImage(back, 0, 0, 800, 600);
+
+	if(Math.random() > 0.01)
+	{
+		context.globalAlpha = 0.65;
+		context.fillStyle = '#000000';
+		context.fillRect(0, 0, 800, 600);
+		context.globalAlpha = 1.0;
+	}
+
+	var now = Date.now();
+	context.fillStyle = context.createPattern(rain, 'repeat');
+
+	context.save();
+	context.translate(-256 + (0.1 * now) % 256, -256 + (0.33 * now) % 256);
+	context.fillRect(0, 0, 800 + 256, 600 + 256);
+	context.restore();
+
+	//context.save();
+	//context.translate(-256 + (0.07 * now) % 256, -256 + (0.2 * now) % 256);
+	//context.fillRect(0, 0, 800 + 256, 600 + 256);
+	//context.restore();
+}
+function loopAnimation(currentTime)
+{
+	drawAFrame();
+	window.requestAnimFrame(loopAnimation, canvas);
+}
+				
+		</script>
+	</head>
+	<body>
+		<canvas id="canvas" height="600" width="800">No suppoet.</canvas>
+	</body>
+</html>
+

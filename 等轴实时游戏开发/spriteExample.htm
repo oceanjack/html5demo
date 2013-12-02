@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>SpriteExample</title>
+        <script charset="utf-8" src="sprite.js"></script>
+        <script>
+            var fpsCount = 0;
+            var fps = 0;
+            var startTime = 0;
+            var x = 0;
+            var y = 0;
+            var jumpV = 10;
+            var jumpT = 0;
+            var isJump = false;
+            var dir = 4;
+            var grassX = 0;
+            var grassY = 0;
+
+            var Timer = function ()
+            {
+                this.date = new Date();
+            }
+            Timer.prototype.update = function ()
+            {
+                var d = new Date();
+                this.date = d;
+            }
+            Timer.prototype.getMilliseconds = function ()
+            {
+                return this.date.getTime();
+            }
+            Timer.prototype.getSeconds = function ()
+            {
+                return Math.round(this.date.getTime() / 1000);
+            }
+            
+            window.onload = function ()
+            {
+                var canvas = document.getElementById("myCanvas");
+                var c = canvas.getContext("2d");
+                //初始化精灵
+                var spritesheet = "character(1).png";
+                var grass = new Image();
+                grass.src = "spriteExampleGrass.png";
+
+                var character1 = new Sprite(spritesheet, 256, 256, 0, 0, 8, 1000);
+
+                var timer = new Timer();
+                c.font = "20px_sans";
+                x = canvas.width / 2 - 128;
+                y = canvas.height / 2 - 128;
+                dir = 4;
+
+                var startTime = timer.getSeconds();
+                draw(startTime);
+
+                function draw(timeStamp)
+                {
+                    timer.update();
+                    switch (dir)
+                    {
+                        case 1:
+                            --x;
+                            if (x < 0)
+                            {
+                                --grassX;
+                                x = 0;
+                            }
+                            break;
+                        case 2:
+                            --y;
+                            if (y < 0)
+                            {
+                                --grassY;
+                                y = 0;
+                            }
+                            break;
+                        case 3:
+                            ++x;
+                            if (x > canvas.width - 256)
+                            {
+                                ++grassX;
+                                x = canvas.width - 256;
+                            }
+                            break;
+                        case 4:
+                            ++y;
+                            if (y > canvas.height - 256)
+                            {
+                                ++grassY;
+                                y = canvas.height - 256;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (timeStamp !== timer.getSeconds()) {
+                        fps = fpsCount;
+                        fpsCount = 0;
+                    }
+                    else
+                        ++fpsCount;
+
+                    c.clearRect(0, 0, 800, 800);
+
+                    var h = 0;
+                    if (isJump)
+                    {
+                        var jt = (timer.getMilliseconds() - jumpT) / 100;
+                        h = 20 * jt - 5 * jt * jt;
+                        if (jt > 0 && h <= 0)
+                        {
+                            isJump = false;
+                            h = 0;
+                        }
+                    }
+
+                    c.fillStyle = c.createPattern(grass, 'repeat');
+                    c.save();
+                    c.translate(-grassX % 520, -grassY % 600);
+                    c.fillRect(-520, -600, 520*3, 600*3);
+                    c.restore();
+
+                    character1.setInitY((dir - 1) * 512);
+                    character1.setPosition(x, y - h);
+                    character1.animate(c, timer);
+                    character1.draw(c);
+
+                    c.fillStyle = "#ffffff";
+                    c.fillText("Elapsed Time: " + (timeStamp - startTime) + " Seconds", 10, 20);
+                    c.fillText("FPS: " + fps, 10, 40);
+
+                    setTimeout(function () {
+                        draw(timer.getSeconds());
+                    }, 1);
+                }
+
+                function getKeyAndMove()
+                {
+                    var keyCode = 0;
+                    if(event == null)
+                    {
+                        keyCode = window.event.keyCode();
+                        window.event.preventDefault();
+                    }
+                    else
+                    {
+                        keyCode = event.keyCode;
+                        event.preventDefault();
+                    }
+                    switch (keyCode)
+                    {
+                        case 67:
+                            if (isJump == false && (dir == 1 || dir == 3))
+                            {
+                                jumpV = 10;
+                                jumpT = timer.getMilliseconds();
+                                isJump = true;
+                            }
+                            break;
+                        case 37:
+                            dir = 1;
+                            break;
+                        case 38:
+                            dir = 2;
+                            break;
+                        case 39:
+                            dir = 3;
+                            break;
+                        case 40:
+                            dir = 4;
+                            break;
+                        default: break;
+                    }
+                }
+                window.addEventListener("keydown", getKeyAndMove, false);
+            }
+            
+        </script>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="520" height="400" style="border:1px solid black;">No Support.</canvas>
+    </body>
+</html>
